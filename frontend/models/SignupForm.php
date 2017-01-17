@@ -12,7 +12,11 @@ class SignupForm extends Model
     public $username;
     public $email;
     public $password;
-
+    //添加字段
+    //重复密码
+    public $rePassword;
+    //验证码
+    public $verifyCode;
 
     /**
      * @inheritdoc
@@ -22,6 +26,7 @@ class SignupForm extends Model
         return [
             ['username', 'trim'],
             ['username', 'required'],
+            //因为要检查是否注册过需要使用对应的model
             ['username', 'unique', 'targetClass' => '\common\models\UserModel', 'message' => 'This username has already been taken.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
 
@@ -31,8 +36,12 @@ class SignupForm extends Model
             ['email', 'string', 'max' => 255],
             ['email', 'unique', 'targetClass' => '\common\models\UserModel', 'message' => 'This email address has already been taken.'],
 
-            ['password', 'required'],
-            ['password', 'string', 'min' => 6],
+            [['password','rePassword'], 'required'],
+            [['password','rePassword'], 'string', 'min' => 6],
+            //定义密码和重复密码的验证规则                                        国际化
+            ['rePassword','compare','compareAttribute'=>'password','message'=>Yii::t('common','password')],
+            //验证码规则
+            ['verifyCode','captcha'],
         ];
     }
 

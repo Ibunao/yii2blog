@@ -9,7 +9,7 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use frontend\assets\AppAsset;
 use common\widgets\Alert;
-
+// ??
 AppAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
@@ -35,28 +35,40 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    $menuItems = [
+    $leftMenus = [
         //使用yii自定义的语言包
         ['label' => Yii::t('yii','Home'), 'url' => ['/site/index']],
-        ['label' => 'About', 'url' => ['/site/about']],
-        ['label' => 'Contact', 'url' => ['/site/contact']],
+        ['label' => '文章', 'url' => ['/site/about']],
+       // ['label' => 'Contact', 'url' => ['/site/contact']],
     ];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
     } else {
-        $menuItems[] = '<li>'
-            . Html::beginForm(['/site/logout'], 'post')
-            . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
-                ['class' => 'btn btn-link logout']
-            )
-            . Html::endForm()
-            . '</li>';
+        $menuItems[] = [
+        //显示头像
+        //将src参数配置在params文件中
+            'label' => '<img src="'.Yii::$app->params['avatar']['small'].'" alt="'.Yii::$app->user->identity->username.'"> ',
+            //添加的类
+            'linkOptions'=>['class'=>'avatar'],
+            //下拉列表
+            'items'=>[
+            //加入图标
+                ['label'=>'<i class="fa fa-sign-out"></i> 退出','url'=>['/site/logout'],'linkOptions'=>['data-method'=>'post']],
+                ['label'=>'个人中心']
+            ]
+        ];
     }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
+        //如果输出的是标签的代码，需要将编码关闭
+        'encodeLabels'=>false,
         'items' => $menuItems,
+    ]);
+    //显示在左边导航栏
+    echo Nav::widget([
+        'options' => ['class' => 'navbar-nav navbar-left'],
+        'items' => $leftMenus,
     ]);
     NavBar::end();
     ?>
