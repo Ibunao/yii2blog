@@ -3,6 +3,7 @@ namespace frontend\models;
 
 use yii\base\Model;
 use common\models\UserModel;
+use Yii;
 
 /**
  * Signup form
@@ -29,6 +30,7 @@ class SignupForm extends Model
             //因为要检查是否注册过需要使用对应的model
             ['username', 'unique', 'targetClass' => '\common\models\UserModel', 'message' => 'This username has already been taken.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
+            ['username', 'match','pattern'=>'/^[(\x{4E00}-\x{9FA5})a-zA-Z]+[(\x{4E00}-\x{9FA5})a-zA-Z_\d]*$/u','message'=>'用户名由字母，汉字，数字，下划线组成，且不能以数字和下划线开头。'],
 
             ['email', 'trim'],
             ['email', 'required'],
@@ -38,6 +40,7 @@ class SignupForm extends Model
 
             [['password','rePassword'], 'required'],
             [['password','rePassword'], 'string', 'min' => 6],
+
             //定义密码和重复密码的验证规则                                        国际化
             ['rePassword','compare','compareAttribute'=>'password','message'=>Yii::t('common','password')],
             //验证码规则
