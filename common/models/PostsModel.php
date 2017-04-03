@@ -21,6 +21,8 @@ use common\models\base\BaseModel;
  */
 class PostsModel extends BaseModel
 {
+    const IS_VALID = 1;//发布
+    const NO_VALID = 0;//未发布
     /**
      * @inheritdoc
      */
@@ -59,5 +61,14 @@ class PostsModel extends BaseModel
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
+    }
+    /**
+     * 定义表的关联关系
+     * @return [type] [description]
+     */
+    public function getRelate()
+    {
+        //一对多的关系 ，一个id对应的post_id有多个记录
+        return $this->hasMany(RelationPostTagsModel::className(), ['post_id'=>'id']);
     }
 }
