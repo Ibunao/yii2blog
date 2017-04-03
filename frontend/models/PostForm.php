@@ -6,6 +6,7 @@ use Yii;
 use yii\db\Query;
 use common\models\PostsModel;
 use common\models\RelationPostTagsModel;
+use common\models\PostExtendModel;
 /**
 * 文章表单模型
 */
@@ -177,7 +178,7 @@ class PostForm extends Model
 	public function getViewById($id)
 	{
 		$res = PostsModel::find()
-			->with('relate.tag')//关联表 通过relation_post_tags表关联tags表，分别在PostsModel类中和RelationPostTagsModel中定义了getRelate和getTag方法
+			->with('relate.tag', 'extend')//关联表 通过relation_post_tags表关联tags表，分别在PostsModel类中和RelationPostTagsModel中定义了getRelate和getTag方法 ,关联post_extends表
 			->where(['id' => $id])
 			->asArray()
 			->one();
@@ -195,5 +196,43 @@ class PostForm extends Model
 		}
 		unset($res['relate']);
 		return $res;
+	}
+	/**
+	 * 文章列表组件获取文章列表
+	 * @param  array  $cond     查询条件
+	 * @param  integer $curPage  当前页
+	 * @param  integer $pageSize 显示大小
+	 * @param  array   $orderBy  排序规则
+	 * @return [type]            [description]
+	 */
+	public static function getList($cond, $curPage = 1, $pageSize = 5, $orderBy = ['id'=>SORT_DESC])
+	{
+		$model = new PostsModel;
+		//查询语句
+		$select = ['id', 'title', 'summary', 'label_img', 'cat_id', 'user_id', 'user_name', 'is_valid', 'created_at', 'updated_at'];
+		$query = $model->find()
+			->select($select)
+			->where($cond)
+			->with('relate.tag', 'extend')
+			->orderBy($orderBy);
+
+		//获取分页数据
+		$res = $model->getPages($query, $curPage, $pageSize);
+		//格式化
+		$res['data'] = self::_formatList($res['data']);
+		return $res;
+	}
+	private static function _formatList($data)
+	{
+		foreach ($data as &$list) {
+			$list['tags'] = [];
+			if (isset($list['relate']) && !empty($list['relate'])) {
+				foreach ($list['relate'] as $lt) {
+					$list['tags'][] = $lt['tag']['tag_name'];
+				}
+			}
+			unset($list['relate']);
+		}
+		return $data;
 	}
 }

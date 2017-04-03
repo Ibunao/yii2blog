@@ -7,6 +7,8 @@ use frontend\models\PostForm;
 use common\models\CatModel;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use common\models\PostExtendModel;
+
 
 /**
 * 文章控制器
@@ -27,7 +29,7 @@ class PostController extends BaseController
                     [
                         'actions' => ['index'],
                         'allow' => true,
-                        'roles' => ['?'],//表示不登陆可以访问
+                        // 'roles' => ['?'],//表示不登陆才可以访问，注释后表示登陆不登陆都可以
                     ],
                     [
                         'actions' => ['create', 'upload', 'ueditor'],
@@ -71,6 +73,7 @@ class PostController extends BaseController
 	 */
 	public function actionIndex()
 	{
+		// echo \Yii::$app->params['upload_url'];exit;
 		// echo Yii::$app->params['ding'];exit;
 		return $this->render('index');
 	}
@@ -101,6 +104,10 @@ class PostController extends BaseController
 	{
 		$model = new PostForm();
 		$data = $model->getViewById($id);
+
+		//文章统计
+		$model = new PostExtendModel;
+		$model->upCounter(['post_id'=>$id], 'browser', 1);
 
 		return $this->render('view', ['data' => $data]);
 	}

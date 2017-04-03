@@ -71,4 +71,13 @@ class PostsModel extends BaseModel
         //一对多的关系 ，一个id对应的post_id有多个记录
         return $this->hasMany(RelationPostTagsModel::className(), ['post_id'=>'id']);
     }
+    /**
+     * 定义表的关联关系
+     * @return [type] [description]
+     */
+    public function getExtend()
+    {
+        //一对一
+        return $this->hasOne(PostExtendModel::className(),['post_id'=>'id']);
+    }
 }
