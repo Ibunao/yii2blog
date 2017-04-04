@@ -12,6 +12,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use frontend\models\FeedForm;
 
 /**
  * Site controller
@@ -209,5 +210,22 @@ class SiteController extends BaseController
         return $this->render('resetPassword', [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * 添加留言
+     * @return [type] [description]
+     */
+    public function actionAddFeed()
+    {
+        $model = new FeedForm();
+        $model->content = Yii::$app->request->post('content');
+        //验证  保存
+        if ($model->validate()) {
+            if ($model->create()) {
+                return json_encode(['status'=>true]);
+            }
+        }
+        return json_encode(['status'=>false, 'msg'=>'发布失败！']);
     }
 }
