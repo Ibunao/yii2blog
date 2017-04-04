@@ -70,6 +70,8 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+        //使用自定义的layout
+        $this->layout = 'login-layout.php';
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
