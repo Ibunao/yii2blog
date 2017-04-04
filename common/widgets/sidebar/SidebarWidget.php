@@ -7,6 +7,7 @@ namespace common\widgets\sidebar;
 use Yii;
 use yii\base\Widget;
 use yii\widgets\Menu;
+use yii\helpers\Html;
 
 class SidebarWidget extends Menu
 {    
@@ -39,5 +40,50 @@ class SidebarWidget extends Menu
                 ]
             ],
         ];
+    }
+
+    //重写高亮显示
+    /**
+     * Normalizes the [[items]] property to remove invisible items and activate certain items.
+     * @param array $items the items to be normalized.
+     * @param boolean $active whether there is an active child menu item.
+     * @return array the normalized menu items
+     */
+    protected function normalizeItems($items, &$active)
+    {
+        foreach ($items as $i => $item) {
+            if (!isset($item['label'])) {
+                $item['label'] = '';
+            }
+            $encodeLabel = isset($item['encode']) ? $item['encode'] : $this->encodeLabels;
+            $items[$i]['label'] = $encodeLabel ? Html::encode($item['label']) : $item['label'];
+            $hasActiveChild = false;
+            if (isset($item['items'])) {
+                $items[$i]['items'] = $this->normalizeItems($item['items'], $hasActiveChild);
+                if (empty($items[$i]['items']) && $this->hideEmptyItems) {
+                    unset($items[$i]['items']);
+                    if (!isset($item['url'])) {
+                        unset($items[$i]);
+                        continue;
+                    }
+                }
+            }
+            if (!isset($item['active'])) {
+                if ($this->activateParents && $hasActiveChild || $this->activateItems && $this->isItemActive($item)) {
+                    $active = $items[$i]['active'] = true;
+                } else {
+                    $items[$i]['active'] = false;
+                }
+            } elseif ($item['active']) {
+                $active = true;
+            }
+             
+            if (isset($item['visible']) && !$item['visible']) {
+                unset($items[$i]);
+                continue;
+            }
+        }
+    
+        return array_values($items);
     }
 }
