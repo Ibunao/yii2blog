@@ -4,6 +4,7 @@ use yii\base\widget;
 use common\widgets\banner\BannerWidget;
 use common\widgets\chat\ChatWidget;
 use common\widgets\post\PostWidget;
+use common\widgets\hot\HotWidget;
 
 $this->title = '博客-首页';
 ?>
@@ -17,5 +18,8 @@ $this->title = '博客-首页';
     <div class="col-lg-3">
         <!-- 留言板组件 -->
         <?=ChatWidget::widget() ;?>
+        <!-- 热门浏览组件 -->
+        <?=HotWidget::widget() ;?>
+
     </div>
 </div>
